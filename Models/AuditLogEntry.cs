@@ -9,8 +9,9 @@ namespace AuditLog.Models
         public DateTime StartDateOfChange { get; set; }
         public DateTime EndDateOfChange { get; set; }
         public string AffectedDays { get; set; } //todo bitmask
-        public TypeChange TypeChange { get; set; } // todo
-        public string UploadValue { get; set; } // todo
+        public string TypeChange { get; set; } // todo
+        public bool Planned { get; set; } // todo
+        public string OriginalValue { get; set; } // todo
         public string NewValue { get; set; } // todo
         public IList<Approval> Approvals { get; set; }
     }

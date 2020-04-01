@@ -1,4 +1,5 @@
-﻿using AuditLog.Models;
+﻿using AuditLog.Enums;
+using AuditLog.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -9,18 +10,22 @@ namespace AuditLog
 {
     static class Program
     {
+        private static List<AuditLogEntry> auditLogEntries = new List<AuditLogEntry>();
         static void Main()
         {
-            Route uploadFile = default, originalFile = default;
+            Route updatedFile = default, originalFile = default;
 
-            ReadWriteFiles(ref uploadFile, ref originalFile);
-            CompareJsonFiles(originalFile, uploadFile);
+            ReadFiles(ref updatedFile, ref originalFile);
+            CompareJsonFiles(originalFile, updatedFile);
 
+
+            string json = JsonConvert.SerializeObject(auditLogEntries, Formatting.Indented);
+            Console.WriteLine(json);
 
             Console.ReadKey();
         }
 
-        private static void ReadWriteFiles(ref Route uploadFile, ref Route originalFile)
+        private static void ReadFiles(ref Route updatedFile, ref Route originalFile)
         {
             using (StreamReader r =
                 new StreamReader(Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
@@ -35,62 +40,67 @@ namespace AuditLog
                     @"..\..\..\Input\Updated.json"))))
             {
                 string json = r.ReadToEnd();
-                uploadFile = JsonConvert.DeserializeObject<Route>(json);
+                updatedFile = JsonConvert.DeserializeObject<Route>(json);
             }
         }
 
         //todo
-        private static void CompareJsonFiles(Route originalFile, Route uploadFile)
+        private static void CompareJsonFiles(Route originalFile, Route updatedFile)
         {
             //todo cancelled
-            CompareRideList(originalFile.Rides, uploadFile.Rides);
+            CompareRideList(originalFile.Rides, updatedFile.Rides);
         }
 
-        private static void CompareRideList(IList<Ride> originalRideList, IList<Ride> uploadRideList)
+        private static void CompareRideList(IList<Ride> originalRideList, IList<Ride> updatedRideList)
         {
             foreach (var originalRide in originalRideList)
             {
-                CheckStartTimeRide(originalRide, uploadRideList);
-                CheckRideDriver(originalRide, uploadRideList);
+                CheckStartTimeRide(originalRide, updatedRideList);
+                CheckRideDriver(originalRide, updatedRideList);
             }
         }
 
-        private static void CheckStartTimeRide(Ride originalRide, IList<Ride> uploadRideList) // todo rename
+        private static void CheckStartTimeRide(Ride originalRide, IList<Ride> updatedRideList) // todo rename
         {
-            var uploadRide = uploadRideList.FirstOrDefault(x => x.DateRide == originalRide.DateRide); //todo
+            var updatedRide = updatedRideList.FirstOrDefault(x => x.DateRide == originalRide.DateRide); //todo
 
-            if (uploadRide == null)
+            // ComparePlanedValue<Ride>(originalRide, updatedRide, nameof(originalRide.PlannedStartTime), nameof(originalRide.StartTime));
+
+            if (updatedRide == null)
             {
                 // uploadRide does not exit   //unplan
                 return;
             }
 
-            if (originalRide.PlannedStartTime != uploadRide.PlannedStartTime)
+            if (originalRide.PlannedStartTime != updatedRide.PlannedStartTime)
             {
                 //plan
             }
-            if (uploadRide.PlannedStartTime != uploadRide.StartTime)
+            if (updatedRide.PlannedStartTime != updatedRide.StartTime)
             {
                 //unplan
             }
 
-            CheckStationOrderAndPassengers(originalRide.Stations, uploadRide.Stations);
+            CheckStationOrderAndPassengers(originalRide.Stations, updatedRide.Stations);
         }
 
-        private static void CheckStationOrderAndPassengers(IList<Station> originalStations, IList<Station> uploadStations)
+        private static void CheckStationOrderAndPassengers(IList<Station> originalStations, IList<Station> updatedStations)
         {
+            //isActive
             foreach (var originalStation in originalStations)
             {
-                var uploadStation = uploadStations.FirstOrDefault(x =>
+                var updatedStation = updatedStations.FirstOrDefault(x =>
                     x.Name == originalStation.Name && x.Address == originalStation.Address);
 
-                if (uploadStation == null)
+                // ComparePlanedValue<Station>(originalStation, updatedStation, nameof(originalStation.PlannedOrder), nameof(originalStation.Order));
+
+                if (updatedStation == null)
                 {
                     // uploadStation does not exit   //unplan
                     return; //todo
                 }
 
-                if (originalStation.PlannedOrder != uploadStation.PlannedOrder)
+                if (originalStation.PlannedOrder != updatedStation.PlannedOrder)
                 {
                     // PlannedOrder change   //plan
                 }
@@ -100,70 +110,108 @@ namespace AuditLog
                     // PlannedOrder not eq Order   //unplan
                 }
 
-                CheckStationPassengers(originalStation.Passengers, uploadStation.Passengers);
+                CheckStationPassengers(originalStation, updatedStation);
             }
         }
 
-        //todo add check active person on this station
-        private static void CheckStationPassengers(IList<Passenger> originalStationPassengers, IList<Passenger> uploadStationPassengers)
+        //todo
+        private static void CheckStationPassengers(Station originalStation, Station updatedStationPassengers)
         {
             //todo check if list difference 
-            foreach (var originalStationPassenger in originalStationPassengers)
+            foreach (var originalPassenger in originalStation.Passengers)
             {
-                var uploadStationPassenger = uploadStationPassengers.FirstOrDefault(x => x.Person.FirstName == originalStationPassenger.Person.FirstName && x.Person.LastName == originalStationPassenger.Person.LastName);
+                var updatedPassenger = updatedStationPassengers.Passengers.FirstOrDefault(x =>
+                    x.FirstName == originalPassenger.FirstName &&
+                    x.LastName == originalPassenger.LastName);
 
-                if (uploadStationPassenger == null)
+                if (updatedPassenger == null)
                 {
-                    // uploadStationPassenger does not exit   //unplan
+                    // updatedPassenger does not exit   //unplan
                     return; //todo
                 }
 
-                //todo check if isActive
-                // if (uploadStationPassenger.PlannedOrder != uploadStation.PlannedOrder)
-                // {
-                //     // PlannedOrder change   //plan
-                // }
-                //
-                // if (originalStation.PlannedOrder != originalStation.Order)
-                // {
-                //     // PlannedOrder not eq Order   //unplan
-                // }
+                if ((originalPassenger.DestinationStation.Order < updatedPassenger.DestinationStation.Order) && !updatedPassenger.IsActive)
+                {
+                    // the person did not reach the point  change   //unplan
+                }
+
+                if ((originalPassenger.DestinationStation.Order > updatedPassenger.DestinationStation.Order) && updatedPassenger.IsActive)
+                {
+                    // person drove the point   //unplan
+                }
             }
         }
 
         // todo check change driver and exist driver
-        private static void CheckRideDriver(Ride originalRide, IList<Ride> uploadRideList)
+        private static void CheckRideDriver(Ride originalRide, IList<Ride> updatedRideList)
         {
             //todo add field for filter (LicenseNumber can not unique)
-            var uploadRide = uploadRideList.FirstOrDefault(x => x.PlannedDriver.LicenseNumber == originalRide.PlannedDriver.LicenseNumber);
+            var updatedRide = updatedRideList.FirstOrDefault(x => x.PlannedDriver.LicenseNumber == originalRide.PlannedDriver.LicenseNumber);
 
-            if (uploadRide == null)
+            // ComparePlanedValue<Ride>(originalRide, updatedRide, nameof(originalRide.PlannedDriver), nameof(originalRide.Driver));
+
+            //todo 
+            if (updatedRide == null)
             {
-                // uploadRide does not exit   //plan
+                // updatedRide does not exit   //plan
                 return;
             }
 
-            if (originalRide.PlannedDriver != uploadRide.PlannedDriver)
+            if (originalRide.PlannedDriver != updatedRide.PlannedDriver)
             {
                 // plan change driver case
             }
 
             //todo compare 2 object
-            if (uploadRide.PlannedDriver != uploadRide.Driver)
+            if (updatedRide.PlannedDriver != updatedRide.Driver)
             {
                 //unplan
             }
-            //todo
         }
 
-        // private static void GenerateAuditLog()
-        // {
+        private static void ComparePlanedValue<T>(T originalObject, T updatedObject, string firstProperty, string secondProperty)
+        {
+            // todo does work with sub object
+            Type type = typeof(T);
+            var originalPropertyValue = type.GetProperty(firstProperty).GetValue(originalObject);
+            var updatedFirstValue = type.GetProperty(secondProperty).GetValue(updatedObject);
+            var updatedSecondValue = type.GetProperty(secondProperty).GetValue(updatedObject);
 
-        // }
+            if (updatedObject == null)
+            {
+                Console.WriteLine('-');
+                return;
+            }
 
-        // private static void ComparePlanedValue()
-        // {
-        //
-        // }
+            if (!originalPropertyValue.Equals(updatedFirstValue))
+            {
+                GenerateAuditLog(TypeChange.Planned, true, originalPropertyValue.ToString(), updatedFirstValue.ToString());
+            }
+
+            if (!originalPropertyValue.Equals(updatedSecondValue))
+            {
+                GenerateAuditLog(TypeChange.Unplanned, false, originalPropertyValue.ToString(), updatedSecondValue.ToString());
+            }
+        }
+
+        private static void GenerateAuditLog(TypeChange typeChange, bool planned, string originalValue, string newValue)
+        {
+            var s = new Approval()
+            {
+                Approved = true,
+                Driver = new Driver()
+            };
+            var auditLogEntry = new AuditLogEntry()
+            {
+                TypeChange = typeChange.ToString(),
+                Planned = planned,
+                OriginalValue = originalValue,
+                NewValue = newValue,
+                Approvals = new List<Approval>() { s }
+
+            };
+
+            auditLogEntries.Add(auditLogEntry);
+        }
     }
 }

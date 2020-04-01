@@ -12,10 +12,9 @@
           "address": "string",
           "passengers": [
             {
-              "person": {
-                "firstName": "string",
-                "lastName": "string"
-              },
+              "firstName": "string",
+              "lastName": "string",
+              "destinationStation": "string",
               "isActive": true
             }
           ],
@@ -25,17 +24,13 @@
         }
       ],
       "driver": {
-        "person": {
-          "firstName": "string",
-          "lastName": "string"
-        },
+        "firstName": "string",
+        "lastName": "string",
         "licenseNumber": "string"
       },
       "plannedDriver": {
-        "person": {
-          "firstName": "string",
-          "lastName": "string"
-        },
+        "firstName": "string",
+        "lastName": "string",
         "licenseNumber": "string"
       },
       "cancelled": true

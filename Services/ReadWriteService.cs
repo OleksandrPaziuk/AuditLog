@@ -15,7 +15,7 @@ namespace AuditLog.Services
     {
         public void ReadFile()
         {
-            using (StreamReader r = new StreamReader(Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\input\upload.json"))))
+            using (StreamReader r = new StreamReader(Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\input\update.json"))))
             {
                 string json = r.ReadToEnd();
                 Route items = JsonConvert.DeserializeObject<Route>(json);

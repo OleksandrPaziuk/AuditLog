@@ -2,7 +2,6 @@
 {
     public enum TypeChange
     {
-        None,
         Planned,
         Unplanned
     }

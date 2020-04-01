@@ -34,19 +34,14 @@ namespace AuditLog.Models
         public bool IsActive { get; set; }
     }
 
-    public class Passenger
+    public class Passenger : Person
     {
-        public Person Person { get; set; }
-
-        public Station DestinationStation { get; set; } //todo
-
-        // public string DestinationStation { get; set; }
+        public Station DestinationStation { get; set; }
         public bool IsActive { get; set; }
     }
 
-    public class Driver
+    public class Driver : Person
     {
-        public Person Person { get; set; }
         public string LicenseNumber { get; set; }
     }
 
