@@ -1,0 +1,46 @@
+﻿{
+  "name": "string1",
+  "activeDays": [ "Sun", "Mon" ],
+  "rides": [
+    {
+      "DateRide": "2020-03-31T13:57:27.745Z",
+      "StartTime": "2020-03-31T13:57:27.745Z",
+      "plannedStartTime": "2020-03-31T13:57:27.745Z",
+      "stations": [
+        {
+          "name": "string",
+          "address": "string",
+          "passengers": [
+            {
+              "person": {
+                "firstName": "string",
+                "lastName": "string"
+              },
+              "isActive": true
+            }
+          ],
+          "order": 1,
+          "plannedOrder": 1,
+          "isActive": true
+        }
+      ],
+      "driver": {
+        "person": {
+          "firstName": "string",
+          "lastName": "string"
+        },
+        "licenseNumber": "string"
+      },
+      "plannedDriver": {
+        "person": {
+          "firstName": "string",
+          "lastName": "string"
+        },
+        "licenseNumber": "string"
+      },
+      "cancelled": true
+    }
+  ],
+  "startDate": "2020-03-31T13:57:27.745Z",
+  "endDate": "2020-03-31T13:57:27.745Z"
+}
