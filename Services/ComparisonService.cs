@@ -23,15 +23,15 @@ namespace AuditLog.Services
             var updatedFirstValue = typeof(T).GetProperty(firstProperty)?.GetValue(updatedObject);
             var updatedSecondValue = typeof(T).GetProperty(secondProperty)?.GetValue(updatedObject);
 
-            if (originalFirstValue.Equals(updatedFirstValue))
+            if (!originalFirstValue.Equals(updatedFirstValue))
             {
                 _auditLogService.AddRecord(true, typeOfChange, originalFirstValue.ToString(),
                     updatedFirstValue.ToString(), approvalList);
             }
 
-            if (updatedFirstValue.Equals(updatedSecondValue))
+            if (!updatedFirstValue.Equals(updatedSecondValue))
             {
-                _auditLogService.AddRecord(false, typeOfChange, originalFirstValue.ToString(),
+                _auditLogService.AddRecord(false, typeOfChange, updatedFirstValue.ToString(),
                     updatedSecondValue.ToString(), approvalList);
             }
         }

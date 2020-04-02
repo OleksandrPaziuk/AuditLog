@@ -8,15 +8,36 @@
       "plannedStartTime": "2020-03-31T13:58:27.745Z",
       "stations": [
         {
-          "name": "name1",
-          "address": "address1",
+          "name": "Stations1",
+          "address": "Address1",
           "passengers": [
             {
-              "firstName": "firstName",
-              "lastName": "lastName",
+              "firstName": "firstName1",
+              "lastName": "lastName1",
               "destinationStation": {
-                "name": "string",
-                "address": "string",
+                "name": "name1",
+                "address": "address1",
+                "order": 2,
+                "plannedOrder": 2,
+                "isActive": true
+              },
+              "isActive": true
+            }
+          ],
+          "order": 1,
+          "plannedOrder": 1,
+          "isActive": true
+        },
+        {
+          "name": "Stations2",
+          "address": "Address2",
+          "passengers": [
+            {
+              "firstName": "firstName2",
+              "lastName": "lastName2",
+              "destinationStation": {
+                "name": "name2",
+                "address": "address2",
                 "order": 2,
                 "plannedOrder": 2,
                 "isActive": true
@@ -30,14 +51,95 @@
         }
       ],
       "driver": {
-        "firstName": "firstName",
-        "lastName": "lastName",
-        "licenseNumber": "string"
+        "firstName": "driverFirstName",
+        "lastName": "driverLastName",
+        "licenseNumber": "licenseNumber"
       },
       "plannedDriver": {
-        "firstName": "string",
-        "lastName": "string",
-        "licenseNumber": "string"
+        "firstName": "driverFirstName",
+        "lastName": "driverLastName",
+        "licenseNumber": "licenseNumber"
+      },
+      "cancelled": true
+    },
+    {
+      "dateRide": "2020-04-01T13:57:27.745Z",
+      "startTime": "2020-03-31T13:58:27.745Z",
+      "plannedStartTime": "2020-03-31T13:58:27.745Z",
+      "stations": [
+        {
+          "name": "Stations1",
+          "address": "Address1",
+          "passengers": [
+            {
+              "firstName": "firstName1",
+              "lastName": "lastName1",
+              "destinationStation": {
+                "name": "name1",
+                "address": "address1",
+                "order": 2,
+                "plannedOrder": 2,
+                "isActive": true
+              },
+              "isActive": true
+            }
+          ],
+          "order": 1,
+          "plannedOrder": 1,
+          "isActive": true
+        },
+        {
+          "name": "Stations2",
+          "address": "Address2",
+          "passengers": [
+            {
+              "firstName": "firstName2",
+              "lastName": "lastName2",
+              "destinationStation": {
+                "name": "name2",
+                "address": "address2",
+                "order": 2,
+                "plannedOrder": 2,
+                "isActive": true
+              },
+              "isActive": true
+            }
+          ],
+          "order": 2,
+          "plannedOrder": 2,
+          "isActive": true
+        },
+        {
+          "name": "Stations3",
+          "address": "Address3",
+          "passengers": [
+            {
+              "firstName": "firstName2",
+              "lastName": "lastName2",
+              "destinationStation": {
+                "name": "name2",
+                "address": "address2",
+                "order": 2,
+                "plannedOrder": 2,
+                "isActive": true
+              },
+              "isActive": true
+            }
+          ],
+          "order": 2,
+          "plannedOrder": 2,
+          "isActive": true
+        }
+      ],
+      "driver": {
+        "firstName": "driverFirstName2",
+        "lastName": "driverLastNameNew2",
+        "licenseNumber": "licenseNumber"
+      },
+      "plannedDriver": {
+        "firstName": "driverFirstName2",
+        "lastName": "driverLastName2",
+        "licenseNumber": "licenseNumber"
       },
       "cancelled": true
     }

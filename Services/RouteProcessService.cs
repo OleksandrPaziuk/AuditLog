@@ -62,8 +62,7 @@ namespace AuditLog.Services
         {
             if (!_comparisonService.ObjectComparison(originalRide.PlannedDriver, updatedRide.PlannedDriver))
             {
-                AddRecord(true, TypeOfChange.ChangeDriver,
-                    originalRide.PlannedDriver.ToString(), updatedRide.PlannedDriver.ToString(), approvalList);
+                AddRecord(true, TypeOfChange.ChangeDriver, "", "", approvalList); // todo
             }
 
             if (!_comparisonService.ObjectComparison(updatedRide.PlannedDriver, updatedRide.Driver))
@@ -74,8 +73,7 @@ namespace AuditLog.Services
                     Approved = false
                 });
 
-                AddRecord(false, TypeOfChange.ChangeDriver,
-                    updatedRide.PlannedDriver.ToString(), updatedRide.Driver.ToString(), approvalList);
+                AddRecord(false, TypeOfChange.ChangeDriver, "", "", approvalList);
             }
         }
 
@@ -103,7 +101,7 @@ namespace AuditLog.Services
                     nameof(originalStation.PlannedOrder),
                     nameof(originalStation.Order), TypeOfChange.ChangeStation, approvalList);
 
-                if (updatedStation != null && originalStation.IsActive != updatedStation.IsActive)
+                if (originalStation.IsActive != updatedStation.IsActive)
                 {
                     AddRecord(false,
                         TypeOfChange.ChangeStationStatus,
