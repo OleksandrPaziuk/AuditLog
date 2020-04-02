@@ -32,7 +32,6 @@ namespace AuditLog.Services
                     return;
                 }
 
-                // todo fix
                 var approvalList = new List<Approval>()
                 {
                     new Approval()
@@ -41,16 +40,7 @@ namespace AuditLog.Services
                     }
                 };
 
-                ProcessDriverObject(originalRide, updatedRide, approvalList);
-
-                // todo fix
-                approvalList = new List<Approval>()
-                {
-                    new Approval()
-                    {
-                        Driver = updatedRide.Driver
-                    }
-                };
+                approvalList = ProcessDriverObject(originalRide, updatedRide, approvalList);
 
                 ProcessStartTime(originalRide, updatedRide, approvalList);
 
@@ -58,7 +48,7 @@ namespace AuditLog.Services
             }
         }
 
-        private void ProcessDriverObject(Ride originalRide, Ride updatedRide, List<Approval> approvalList)
+        private List<Approval> ProcessDriverObject(Ride originalRide, Ride updatedRide, List<Approval> approvalList)
         {
             if (!_comparisonService.ObjectComparison(originalRide.PlannedDriver, updatedRide.PlannedDriver))
             {
@@ -74,7 +64,12 @@ namespace AuditLog.Services
                 });
 
                 AddRecord(false, TypeOfChange.ChangeDriver, "", "", approvalList);
+                return new List<Approval>()
+                {
+                    approvalList.First()
+                };
             }
+            return approvalList;
         }
 
         private void ProcessStartTime(Ride originalRide, Ride updatedRide, List<Approval> approvalList)
