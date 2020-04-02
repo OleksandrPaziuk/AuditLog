@@ -1,6 +1,6 @@
 ﻿namespace AuditLog.Enums
 {
-    public enum PotentialErrorType
+    public enum TypeOfChange
     {
         RouteNotValid,
         ObjectNotExist,

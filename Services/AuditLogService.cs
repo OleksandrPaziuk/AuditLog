@@ -7,7 +7,7 @@ namespace AuditLog.Services
 {
     public interface IAuditLogService
     {
-        void GenerateAuditLog(TypeChange typeChange, string description, string originalValue,
+        void AddRecord(bool isPlanned, TypeOfChange typeOfChange, string originalValue,
             string newValue, List<Approval> approvalList);
     }
 
@@ -15,7 +15,7 @@ namespace AuditLog.Services
     {
         private readonly IGlobalVariablesService _globalVariablesService = new GlobalVariablesService();
 
-        public void GenerateAuditLog(TypeChange typeChange, string description, string originalValue,
+        public void AddRecord(bool isPlanned, TypeOfChange typeOfChange, string originalValue,
             string newValue, List<Approval> approvalList)
         {
             var auditLogEntry = new AuditLogEntry()
@@ -23,8 +23,8 @@ namespace AuditLog.Services
                 StartDateOfChange = _globalVariablesService.GetGlobalStartDateOfChange(),
                 EndDateOfChange = DateTime.UtcNow,
                 // AffectedDays // todo ask
-                TypeChange = typeChange.ToString(),
-                Description = description,
+                TypeOfChange = typeOfChange.ToString(),
+                IsPlanned = isPlanned,
                 OriginalValue = originalValue,
                 NewValue = newValue,
                 Approvals = approvalList //todo ask

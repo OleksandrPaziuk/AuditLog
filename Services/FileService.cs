@@ -7,15 +7,15 @@ namespace AuditLog.Services
 {
     public interface IFileService
     {
-        void ReadFiles(ref Route updatedFile, ref Route originalFile);
-        void WriteFile();
+        void ReadInputFiles(ref Route updatedFile, ref Route originalFile);
+        void WriteOutputFile();
     }
 
     public class FileService : IFileService
     {
         private readonly IGlobalVariablesService _globalVariablesService = new GlobalVariablesService();
 
-        public void ReadFiles(ref Route updatedFile, ref Route originalFile)
+        public void ReadInputFiles(ref Route updatedFile, ref Route originalFile)
         {
             using (StreamReader r =
                 new StreamReader(Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
@@ -32,7 +32,7 @@ namespace AuditLog.Services
             }
         }
 
-        public void WriteFile()
+        public void WriteOutputFile()
         {
             string json = JsonConvert.SerializeObject(_globalVariablesService.GetGlobalAuditLogEntry().ToArray(),
                 Formatting.Indented);

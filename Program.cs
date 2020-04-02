@@ -9,24 +9,24 @@ namespace AuditLog
     {
         private static readonly IFileService FileService = new FileService();
         private static readonly IValidationService ValidationService = new ValidationService();
-        private static readonly IAnalyzeService AnalyzeService = new AnalyzeService();
+        private static readonly IRouteProcessService RouteProcessService = new RouteProcessService();
         private static readonly IGlobalVariablesService GlobalVariablesService = new GlobalVariablesService();
 
         static void Main()
         {
             //todo added open dialog window with select input file
             Route updatedFile = default, originalFile = default;
-            FileService.ReadFiles(ref updatedFile, ref originalFile);
+            FileService.ReadInputFiles(ref updatedFile, ref originalFile);
 
             if (!ValidationService.RouteValidation(originalFile, updatedFile))
             {
                 Console.WriteLine("Rout does not valid");
             }
 
-            AnalyzeService.AnalyzeJsonFiles(originalFile, updatedFile);
-            FileService.WriteFile();
+            RouteProcessService.ProcessRoute(originalFile, updatedFile);
+            FileService.WriteOutputFile();
 
-            //todo add grouping by params (now default group by TypeChange)
+            //todo add grouping by params (now default group by isPlanned)
 
             Console.WriteLine(JsonConvert.SerializeObject(GlobalVariablesService.GetGlobalAuditLogEntry(),
                 Formatting.Indented));

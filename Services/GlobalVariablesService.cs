@@ -31,7 +31,7 @@ namespace AuditLog.Services
 
         public List<IGrouping<string, AuditLogEntry>> GetGlobalAuditLogEntry()
         {
-            return AuditLogEntry.GroupBy(x => x.TypeChange).ToList();
+            return AuditLogEntry.GroupBy(x => x.TypeOfChange).ToList();
         }
 
         public void SetGlobalAuditLogEntry(List<AuditLogEntry> newAuditLogEntry)

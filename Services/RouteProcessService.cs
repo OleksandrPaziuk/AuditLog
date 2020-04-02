@@ -5,24 +5,22 @@ using System.Linq;
 
 namespace AuditLog.Services
 {
-    public interface IAnalyzeService
+    public interface IRouteProcessService
     {
-        void AnalyzeJsonFiles(Route originalFile, Route updatedFile);
+        void ProcessRoute(Route originalFile, Route updatedFile);
     }
 
-    public class AnalyzeService : IAnalyzeService
+    public class RouteProcessService : IRouteProcessService
     {
         private readonly IAuditLogService _auditLogService = new AuditLogService();
         private readonly IComparisonService _comparisonService = new ComparisonService();
 
-
-        public void AnalyzeJsonFiles(Route originalFile, Route updatedFile)
+        public void ProcessRoute(Route originalFile, Route updatedFile)
         {
-            AnalyzeRidesList(originalFile.Rides, updatedFile.Rides);
+            ProcessRides(originalFile.Rides, updatedFile.Rides);
         }
 
-
-        private void AnalyzeRidesList(IList<Ride> originalRideList, IList<Ride> updatedRideList)
+        private void ProcessRides(IList<Ride> originalRideList, IList<Ride> updatedRideList)
         {
             foreach (var originalRide in originalRideList)
             {
@@ -30,12 +28,11 @@ namespace AuditLog.Services
 
                 if (updatedRide == null)
                 {
-                    _auditLogService.GenerateAuditLog(TypeChange.Unplanned,
-                        $"{typeof(Station).Name}{PotentialErrorType.ObjectNotExist}",
-                        "", "", null);
+                    AddRecord(false, TypeOfChange.ObjectNotExist, typeof(Station).Name, "", null);
                     return;
                 }
 
+                // todo fix
                 var approvalList = new List<Approval>()
                 {
                     new Approval()
@@ -44,7 +41,7 @@ namespace AuditLog.Services
                     }
                 };
 
-                AnalyzeDriverObject(originalRide, updatedRide, approvalList);
+                ProcessDriverObject(originalRide, updatedRide, approvalList);
 
                 // todo fix
                 approvalList = new List<Approval>()
@@ -55,17 +52,17 @@ namespace AuditLog.Services
                     }
                 };
 
-                AnalyzeStartTimeValue(originalRide, updatedRide, approvalList);
+                ProcessStartTime(originalRide, updatedRide, approvalList);
 
-                AnalyzeStationList(originalRide.Stations, updatedRide.Stations, approvalList);
+                ProcessStations(originalRide.Stations, updatedRide.Stations, approvalList);
             }
         }
 
-        private void AnalyzeDriverObject(Ride originalRide, Ride updatedRide, List<Approval> approvalList)
+        private void ProcessDriverObject(Ride originalRide, Ride updatedRide, List<Approval> approvalList)
         {
             if (!_comparisonService.ObjectComparison(originalRide.PlannedDriver, updatedRide.PlannedDriver))
             {
-                _auditLogService.GenerateAuditLog(TypeChange.Planned, PotentialErrorType.ChangeDriver.ToString(),
+                AddRecord(true, TypeOfChange.ChangeDriver,
                     originalRide.PlannedDriver.ToString(), updatedRide.PlannedDriver.ToString(), approvalList);
             }
 
@@ -77,18 +74,18 @@ namespace AuditLog.Services
                     Approved = false
                 });
 
-                _auditLogService.GenerateAuditLog(TypeChange.Unplanned, PotentialErrorType.ChangeDriver.ToString(),
+                AddRecord(false, TypeOfChange.ChangeDriver,
                     updatedRide.PlannedDriver.ToString(), updatedRide.Driver.ToString(), approvalList);
             }
         }
 
-        private void AnalyzeStartTimeValue(Ride originalRide, Ride updatedRide, List<Approval> approvalList)
+        private void ProcessStartTime(Ride originalRide, Ride updatedRide, List<Approval> approvalList)
         {
             _comparisonService.ObjectComparison<Ride>(originalRide, updatedRide, nameof(originalRide.PlannedStartTime),
-                nameof(originalRide.StartTime), PotentialErrorType.ChangeStartTime, approvalList);
+                nameof(originalRide.StartTime), TypeOfChange.ChangeStartTime, approvalList);
         }
 
-        private void AnalyzeStationList(IList<Station> originalStations, IList<Station> updatedStations,
+        private void ProcessStations(IList<Station> originalStations, IList<Station> updatedStations,
             List<Approval> approvalList)
         {
             foreach (var originalStation in originalStations)
@@ -98,28 +95,26 @@ namespace AuditLog.Services
 
                 if (updatedStation == null)
                 {
-                    _auditLogService.GenerateAuditLog(TypeChange.Unplanned,
-                        $"{typeof(Station).Name}{PotentialErrorType.ObjectNotExist}",
-                        "", "", null);
+                    AddRecord(false, TypeOfChange.ObjectNotExist, typeof(Station).Name, "", null);
                     return;
                 }
 
                 _comparisonService.ObjectComparison<Station>(originalStation, updatedStation,
                     nameof(originalStation.PlannedOrder),
-                    nameof(originalStation.Order), PotentialErrorType.ChangeStation, approvalList);
+                    nameof(originalStation.Order), TypeOfChange.ChangeStation, approvalList);
 
                 if (updatedStation != null && originalStation.IsActive != updatedStation.IsActive)
                 {
-                    _auditLogService.GenerateAuditLog(TypeChange.Unplanned,
-                        PotentialErrorType.ChangeStationStatus.ToString(),
+                    AddRecord(false,
+                        TypeOfChange.ChangeStationStatus,
                         originalStation.IsActive.ToString(), updatedStation.IsActive.ToString(), approvalList);
                 }
 
-                AnalyzePassengerList(originalStation, updatedStation, approvalList);
+                ProcessPassengers(originalStation, updatedStation, approvalList);
             }
         }
 
-        private void AnalyzePassengerList(Station originalStation, Station updatedStationPassengers,
+        private void ProcessPassengers(Station originalStation, Station updatedStationPassengers,
             List<Approval> approvalList)
         {
             foreach (var originalPassenger in originalStation.Passengers)
@@ -130,16 +125,14 @@ namespace AuditLog.Services
 
                 if (updatedPassenger == null)
                 {
-                    _auditLogService.GenerateAuditLog(TypeChange.Unplanned,
-                        $"{typeof(Passenger).Name}{PotentialErrorType.ObjectNotExist}", "", "", null);
+                    AddRecord(false, TypeOfChange.ObjectNotExist, typeof(Passenger).Name, "", null);
                     return;
                 }
 
                 if ((originalPassenger.DestinationStation.Order < updatedPassenger.DestinationStation.Order) &&
                     updatedPassenger.IsActive)
                 {
-                    _auditLogService.GenerateAuditLog(TypeChange.Unplanned,
-                        $"{typeof(Passenger).Name}{PotentialErrorType.DestinationTooEarly}",
+                    AddRecord(false, TypeOfChange.DestinationTooEarly,
                         originalPassenger.DestinationStation.Order.ToString(),
                         updatedPassenger.DestinationStation.Order.ToString(), approvalList);
                 }
@@ -147,12 +140,17 @@ namespace AuditLog.Services
                 if ((originalPassenger.DestinationStation.Order > updatedPassenger.DestinationStation.Order) &&
                     updatedPassenger.IsActive)
                 {
-                    _auditLogService.GenerateAuditLog(TypeChange.Unplanned,
-                        $"{typeof(Passenger).Name}{PotentialErrorType.DestinationTooLate}",
+                    AddRecord(false, TypeOfChange.DestinationTooLate,
                         originalPassenger.DestinationStation.Order.ToString(),
                         updatedPassenger.DestinationStation.Order.ToString(), approvalList);
                 }
             }
+        }
+
+        private void AddRecord(bool isPlanned, TypeOfChange typeOfChange, string originalValue, string newValue,
+            List<Approval> approvalList)
+        {
+            _auditLogService.AddRecord(isPlanned, typeOfChange, originalValue, newValue, approvalList);
         }
     }
 }

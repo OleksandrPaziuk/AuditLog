@@ -12,7 +12,7 @@ namespace AuditLog.Services
     public class ValidationService : IValidationService
     {
         private readonly IAuditLogService _auditLogService = new AuditLogService();
-        private readonly IFileService _FileService = new FileService();
+        private readonly IFileService _fileService = new FileService();
         private readonly IGlobalVariablesService _globalVariablesService = new GlobalVariablesService();
 
         public bool RouteValidation(Route originalFile, Route updatedFile)
@@ -20,9 +20,9 @@ namespace AuditLog.Services
             _globalVariablesService.SetGlobalStartDateOfChange(DateTime.UtcNow);
             if (updatedFile.StartDate.AddYears(1) < updatedFile.EndDate)
             {
-                _auditLogService.GenerateAuditLog(TypeChange.Unplanned,
-                    $"{typeof(Passenger).Name}{PotentialErrorType.RouteNotValid}", "", "", null);
-                _FileService.WriteFile();
+                _auditLogService.AddRecord(false, TypeOfChange.RouteNotValid, typeof(Passenger).Name, "", null);
+                _fileService.WriteOutputFile();
+                return false;
             }
 
             return true;
