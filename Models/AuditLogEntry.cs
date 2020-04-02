@@ -9,7 +9,7 @@ namespace AuditLog.Models
     {
         public DateTime StartDateOfChange { get; set; }
         public DateTime EndDateOfChange { get; set; }
-        public bool [] AffectedDays { get; set; }
+        public IList<string> AffectedDays { get; set; }
         public string TypeOfChange { get; set; }
         public bool IsPlanned { get; set; } // todo additional field
         public string OriginalValue { get; set; }

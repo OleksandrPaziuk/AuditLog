@@ -9,6 +9,7 @@
         ChangeStationStatus,
         ChangeDriver,
         DestinationTooEarly,
-        DestinationTooLate
+        DestinationTooLate,
+        AffectedDays
     }
 }

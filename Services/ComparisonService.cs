@@ -1,4 +1,5 @@
-﻿using AuditLog.Enums;
+﻿using System;
+using AuditLog.Enums;
 using AuditLog.Models;
 using System.Collections.Generic;
 
@@ -7,7 +8,7 @@ namespace AuditLog.Services
     public interface IComparisonService
     {
         void ObjectComparison<T>(T originalObject, T updatedObject, string firstProperty,
-            string secondProperty, TypeOfChange typeOfChange, List<Approval> approvalList);
+            string secondProperty, TypeOfChange typeOfChange, List<Approval> approvalList, DateTime dateOdChange);
 
         bool ObjectComparison<T>(T object1, T object2);
     }
@@ -17,7 +18,7 @@ namespace AuditLog.Services
         private readonly IAuditLogService _auditLogService = new AuditLogService();
 
         public void ObjectComparison<T>(T originalObject, T updatedObject, string firstProperty,
-            string secondProperty, TypeOfChange typeOfChange, List<Approval> approvalList)
+            string secondProperty, TypeOfChange typeOfChange, List<Approval> approvalList, DateTime dateOdChange)
         {
             var originalFirstValue = typeof(T).GetProperty(firstProperty)?.GetValue(originalObject);
             var updatedFirstValue = typeof(T).GetProperty(firstProperty)?.GetValue(updatedObject);
@@ -26,13 +27,13 @@ namespace AuditLog.Services
             if (!originalFirstValue.Equals(updatedFirstValue))
             {
                 _auditLogService.AddRecord(true, typeOfChange, originalFirstValue.ToString(),
-                    updatedFirstValue.ToString(), approvalList);
+                    updatedFirstValue.ToString(), approvalList, dateOdChange);
             }
 
             if (!updatedFirstValue.Equals(updatedSecondValue))
             {
                 _auditLogService.AddRecord(false, typeOfChange, updatedFirstValue.ToString(),
-                    updatedSecondValue.ToString(), approvalList);
+                    updatedSecondValue.ToString(), approvalList, dateOdChange);
             }
         }
 

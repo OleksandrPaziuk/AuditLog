@@ -5,7 +5,7 @@
     {
       "dateRide": "2020-03-31T13:57:27.745Z",
       "startTime": "2020-03-31T13:58:27.745Z",
-      "plannedStartTime": "2020-03-31T13:58:27.745Z",
+      "plannedStartTime": "2020-03-31T13:59:27.745Z",
       "stations": [
         {
           "name": "Stations1",
@@ -51,7 +51,7 @@
         }
       ],
       "driver": {
-        "firstName": "driverFirstName",
+        "firstName": "driverOld",
         "lastName": "driverLastName",
         "licenseNumber": "licenseNumber"
       },
