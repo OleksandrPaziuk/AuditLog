@@ -1,20 +1,26 @@
 ﻿{
   "name": "string",
-  "activeDays": [ "Sun", "Mon"],
+  "activeDays": [ 0, 1, 1, 1, 1, 1, 0 ],
   "rides": [
     {
-      "DateRide": "2020-03-31T13:57:27.745Z",
-      "StartTime": "2020-03-31T13:57:27.745Z",
-      "plannedStartTime": "2020-03-31T13:57:27.745Z",
+      "dateRide": "2020-03-31T13:57:27.745Z",
+      "startTime": "2020-03-31T13:58:27.745Z",
+      "plannedStartTime": "2020-03-31T13:58:27.745Z",
       "stations": [
         {
-          "name": "string",
-          "address": "string",
+          "name": "name1",
+          "address": "address1",
           "passengers": [
             {
-              "firstName": "string",
-              "lastName": "string",
-              "destinationStation": "string",
+              "firstName": "firstName",
+              "lastName": "lastName",
+              "destinationStation": {
+                "name": "string",
+                "address": "string",
+                "order": 2,
+                "plannedOrder": 2,
+                "isActive": true
+              },
               "isActive": true
             }
           ],
@@ -24,8 +30,8 @@
         }
       ],
       "driver": {
-        "firstName": "string",
-        "lastName": "string",
+        "firstName": "firstName",
+        "lastName": "lastName",
         "licenseNumber": "string"
       },
       "plannedDriver": {

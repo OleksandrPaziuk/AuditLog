@@ -3,3 +3,4 @@
 /.vs/AuditLog/v15/.suo
 /.vs/AuditLog/v16/.suo
 *.sln
+/Output/Output.json

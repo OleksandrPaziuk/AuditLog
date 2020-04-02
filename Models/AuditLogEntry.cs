@@ -9,8 +9,8 @@ namespace AuditLog.Models
     {
         public DateTime StartDateOfChange { get; set; }
         public DateTime EndDateOfChange { get; set; }
-        public BitArray AffectedDays { get; set; }
-        public TypeChange TypeChange { get; set; }
+        public bool [] AffectedDays { get; set; }
+        public string TypeChange { get; set; }
         public string Description { get; set; } // todo additional field
         public string OriginalValue { get; set; }
         public string NewValue { get; set; }
